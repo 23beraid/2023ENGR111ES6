@@ -38,7 +38,7 @@ const int SERVO_CLOSE_ANGLE = 20;
 void setup() {
   wifi_start();
   mqtt_start();
-
+  enable_sensors();
   pinMode(DHT_PIN, INPUT);
   pinMode(PHOTOCELL_PIN, INPUT);
   pinMode(SOIL_PIN, INPUT);
@@ -52,7 +52,7 @@ void setup() {
 const int publishInterval = 10000;
 
 void loop() {
- 
+ mqtt_loop();
   myservo.attach(SERVO_PIN, 500, 2500);
   myservo.write(SERVO_CLOSE_ANGLE);
 
@@ -68,12 +68,12 @@ void loop() {
   myservo.write(SERVO_CLOSE_ANGLE);
   delay(2000);
   char pubString[8];
-  dtostrf(soilPercent, 1, 2, pubString);  //dtostrf(float_value, min_width, num_digits_after_decimal, where_to_store_string)
+  dtostrf(soilhumidity, 1, 2, pubString);  //dtostrf(float_value, min_width, num_digits_after_decimal, where_to_store_string)
   String soilTopic = YEAR + "/" + CLASS + "/" + SECTION + "/" + GROUP_NUMBER + "/" + "soil_hum";
   
   //Non-blocking MQTT publish & delay
   client.publish(soilTopic.c_str(), pubString);
-
+  delay(500);
 while(soilhumidity >= 2600 )
 {
   myservo.write(SERVO_OPEN_ANGLE);
