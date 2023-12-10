@@ -59,8 +59,8 @@ void loop() {
   int photo = analogRead(PHOTOCELL_PIN);
   Serial.print("Photocell Value: ");
   Serial.println(photo);
-
-  int temperature = analogRead(DHT_PIN);
+  int humidity = dht.readHumidity();
+  int temperature = dht.readTemperature();
   Serial.print("Temperature Value: ");
   Serial.println(temperature);
   
@@ -71,16 +71,24 @@ void loop() {
   Serial.println("");
   myservo.write(SERVO_CLOSE_ANGLE);
   delay(2000);
-  char pubString[8]; 
-   dtostrf(soilhumidity, 1, 2, pubString);  //dtostrf(float_value, min_width, num_digits_after_decimal, where_to_store_string)
+  char pubString1[8]; 
+   dtostrf(soilhumidity, 1, 2, pubString1);  //dtostrf(float_value, min_width, num_digits_after_decimal, where_to_store_string)
+    String soilTopic = YEAR + "/" + CLASS + "/" + SECTION + "/" + GROUP_NUMBER + "/" + "soil_hum";
+
   char pubString2[8];
    dtostrf(temperature, 1, 2, pubString2);  //dtostrf(float_value, min_width, num_digits_after_decimal, where_to_store_string)
+  String tempTopic = YEAR + "/" + CLASS + "/" + SECTION + "/" + GROUP_NUMBER + "/" + "temp";
   char pubString3[8];
    dtostrf(photo, 1, 2, pubString3);  //dtostrf(float_value, min_width, num_digits_after_decimal, where_to_store_string)
-  String soilTopic = YEAR + "/" + CLASS + "/" + SECTION + "/" + GROUP_NUMBER + "/" + "soil_hum";
-  
+    String luxTopic = YEAR + "/" + CLASS + "/" + SECTION + "/" + GROUP_NUMBER + "/" + "lux";
+char pubString4[8];
+   dtostrf(humidity, 1, 2, pubString4);  //dtostrf(float_value, min_width, num_digits_after_decimal, where_to_store_string)
+    String humTopic = YEAR + "/" + CLASS + "/" + SECTION + "/" + GROUP_NUMBER + "/" + "hum";
   //Non-blocking MQTT publish & delay
-  client.publish(soilTopic.c_str(), pubString);
+  client.publish(soilTopic.c_str(), pubString1);
+  client.publish(tempTopic.c_str(), pubString2);
+  client.publish(luxTopic.c_str(), pubString3);
+  client.publish(humTopic.c_str(), pubString4);
 delay(500);
 while(soilhumidity >= 2600 )
 {
